@@ -30,14 +30,33 @@ jobs:
       - name: Generate Android Platform Skeleton
         run: flutter create . --org com.epson.resetter --project-name epson_waste_ink_resetter
 
+      - name: Configure Android SDK & Plugin Compatibility
+        run: |
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle || true
+          sed -i 's/minSdkVersion = flutter.minSdkVersion/minSdkVersion = 21/g' android/app/build.gradle || true
+          cat << 'EOF' >> android/build.gradle
+
+          subprojects {
+              afterEvaluate { project ->
+                  if (project.hasProperty('android')) {
+                      project.android {
+                          if (namespace == null) {
+                              namespace project.group ?: ("com.example." + project.name.replace('-', '_'))
+                          }
+                      }
+                  }
+              }
+          }
+          EOF
+
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons || flutter build apk --debug
 
       - name: Upload APK to Download Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: EpsonResetter-Release-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: EpsonResetter-APK
+          path: build/app/outputs/flutter-apk/*.apk
