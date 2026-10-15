@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   # Library USB cross-platform resmi di pub.dev (Android USB Host API & libusb)
-  quick_usb: ^0.4.3
+  quick_usb: ^0.4.0
   # Icon dan styling modern
   cupertino_icons: ^1.0.6
   google_fonts: ^6.1.0
